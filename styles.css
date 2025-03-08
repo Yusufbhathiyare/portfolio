@@ -1,0 +1,338 @@
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom font */
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* CSS Variables for theming */
+:root {
+    /* Dark Mode (default) */
+    --bg-body: #111827;
+    --bg-section: #1f2937;
+    --bg-section-alt: #111827;
+    --bg-sidebar: linear-gradient(to bottom, #1f2937, #111827);
+    --bg-home: linear-gradient(135deg, #1f2937, #111827, #6b7280);
+    --bg-footer: linear-gradient(to right, #111827, #1f2937);
+    --text-primary: #fff;
+    --text-secondary: #f3f4f6;
+    --text-muted: #d1d5db;
+    --card-bg: linear-gradient(135deg, #0891b2, #7c3aed);
+    --card-shadow: 0 4px 15px rgba(0, 230, 255, 0.3);
+    --card-hover-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
+    --link-hover: #00e6ff;
+    --modal-bg: #1f2937;
+    --modal-border: #374151;
+}
+
+:root[data-theme="light"] {
+    /* Light Mode */
+    --bg-body: linear-gradient(135deg, #fef9e7, #ffedeb); /* Cream to light peach */
+    --bg-section: #fff7ed; /* Soft cream */
+    --bg-section-alt: #fefce8; /* Pale yellow */
+    --bg-sidebar: linear-gradient(to bottom, #fff7ed, #fed7aa); /* Cream to peach */
+    --bg-home: linear-gradient(135deg, #fef9e7, #fefce8, #ffedeb); /* Subtle gradient */
+    --bg-footer: linear-gradient(to right, #fef9e7, #fed7aa); /* Cream to peach */
+    --text-primary: #2d3748; /* Charcoal gray */
+    --text-secondary: #4a5568; /* Softer gray */
+    --text-muted: #7b8794; /* Muted gray */
+    --card-bg: linear-gradient(135deg, #a7f3d0, #f9a8d4); /* Mint to pink for all cards */
+    --card-shadow: 0 4px 15px rgba(167, 243, 208, 0.4); /* Mint shadow */
+    --card-hover-shadow: 0 0 25px rgba(249, 168, 212, 0.6); /* Pink shadow */
+    --link-hover: #f472b6; /* Coral pink */
+    --modal-bg: #fff7ed; /* Soft cream */
+    --modal-border: #e5e7eb; /* Light gray */
+}
+
+/* Apply variables */
+body {
+    background: var(--bg-body);
+    color: var(--text-secondary);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+#sidebar {
+    background: var(--bg-sidebar);
+    box-shadow: 0 0 20px rgba(0, 230, 255, 0.2);
+}
+
+#sidebar.collapsed {
+    width: 4rem;
+}
+
+#sidebar.collapsed span {
+    display: none;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--link-hover);
+    transform: scale(1.1);
+}
+
+.nav-link.active {
+    color: #10b981; /* Teal for active links in light mode */
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+section {
+    scroll-margin-top: 4rem;
+}
+
+#home {
+    background: var(--bg-home);
+}
+
+.bg-gray-800 {
+    background: var(--bg-section);
+}
+
+.bg-gray-900 {
+    background: var(--bg-section-alt);
+}
+
+/* Card styling */
+.card {
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    word-wrap: break-word;
+    color: var(--text-secondary); /* Default text color for all card content */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card * {
+    color: inherit; /* Ensure all child elements inherit the card's color */
+}
+
+.card h3, .card strong {
+    color: var(--text-primary) !important; /* Headings and strong text */
+}
+
+.card p, .card li, .card span {
+    color: var(--text-secondary) !important; /* Body text, including spans in Tech Stack */
+}
+
+/* General text classes */
+.text-gray-300 {
+    color: var(--text-muted);
+}
+
+.text-white {
+    color: var(--text-primary);
+}
+
+.text-cyan-400 {
+    color: #10b981; /* Teal in light mode */
+}
+
+.text-pink-500 {
+    color: #f472b6; /* Coral in light mode */
+}
+
+footer {
+    background: var(--bg-footer);
+}
+
+a:hover {
+    color: var(--link-hover);
+}
+
+/* Modal Styles */
+#detail-modal {
+    transition: opacity 0.3s ease-in-out;
+    z-index: 50;
+}
+
+#detail-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#detail-modal:not(.hidden) {
+    opacity: 1;
+}
+
+#modal-content {
+    background: var(--modal-bg);
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: scale(0);
+    transition: transform 0.3s ease-in-out;
+    width: 100%;
+    max-width: 32rem;
+    position: relative;
+    overflow: hidden;
+}
+
+#modal-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(244, 114, 182, 0.1), transparent);
+    animation: subtleGlow 10s infinite linear;
+    z-index: -1;
+}
+
+@keyframes subtleGlow {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+#detail-modal:not(.hidden) #modal-content {
+    transform: scale(1);
+}
+
+#modal-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+#modal-description {
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+
+#modal-details {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+#modal-details.collapsed {
+    max-height: 10rem;
+    overflow: hidden;
+}
+
+#modal-details li {
+    position: relative;
+    padding-left: 1.75rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+#modal-details li:before {
+    content: "\f058";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #10b981; /* Teal in light mode */
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+}
+
+#modal-content .border-t {
+    border-color: var(--modal-border);
+}
+
+.modal-details-toggle {
+    cursor: pointer;
+    color: #10b981; /* Teal in light mode */
+    margin-top: 0.5rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.modal-details-toggle:hover {
+    color: #f472b6; /* Coral on hover */
+}
+
+/* Custom scrollbar for modal details */
+#modal-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modal-details::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#modal-details::-webkit-scrollbar-thumb {
+    background: #10b981; /* Teal */
+    border-radius: 3px;
+}
+
+#modal-details::-webkit-scrollbar-thumb:hover {
+    background: #059669; /* Darker teal */
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+    main {
+        margin-left: 4rem;
+    }
+    #sidebar {
+        width: 4rem;
+    }
+    #sidebar span {
+        display: none;
+    }
+    .card {
+        padding: 1rem;
+    }
+    .card h3 {
+        font-size: 1.125rem;
+    }
+    .card p, .card li {
+        font-size: 0.875rem;
+    }
+    .list-disc {
+        padding-left: 1rem;
+    }
+    #modal-content {
+        width: 90%;
+        padding: 0;
+    }
+    #modal-title {
+        font-size: 1.25rem;
+    }
+    #modal-description, #modal-details {
+        font-size: 0.875rem;
+    }
+    #modal-details {
+        max-height: 40vh;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 768px) {
+    main {
+        margin-left: 5rem;
+    }
+    .card {
+        padding: 1.5rem;
+    }
+    #modal-content {
+        width: 80%;
+    }
+}
+
+@media (min-width: 768px) {
+    main {
+        margin-left: 16rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    #modal-content {
+        max-width: 48rem;
+    }
+}
